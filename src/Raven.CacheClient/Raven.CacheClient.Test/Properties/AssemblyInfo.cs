@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Raven.CacheClient.ConAppTest")]
+[assembly: AssemblyTitle("Raven.CacheClient.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Raven.CacheClient.ConAppTest")]
+[assembly: AssemblyProduct("Raven.CacheClient.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("5a415c7a-fb0f-44e1-9e01-e73f29e7cf9c")]
+[assembly: Guid("c67a7c7b-89ac-4baf-a70c-2b38652680b7")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

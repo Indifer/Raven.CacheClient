@@ -4,21 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Raven.Serializer;
+using StackExchange.Redis;
+
 namespace Raven.CacheClient
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface ICacheClient : IDisposable
     {
         /// <summary>
-        /// Return the instance of <see cref="ISerializer"/>
+        /// 
         /// </summary>
-        ISerializer Serializer { get; }
+        IDatabase Database { get; }
 
         /// <summary>
-        /// Verify that the specified cache key exists
+        /// 
         /// </summary>
-        /// <param name="key">The cache key.</param>
-        /// <returns>True if the key is present into Redis. Othwerwise False</returns>
-        bool Exists(string key);
+        IDataSerializer Serializer { get; }
+
+        /// <summary>
+		/// Verify that the specified cache key exists
+		/// </summary>
+		/// <param name="key">The cache key.</param>
+		/// <returns>True if the key is present into Redis. Othwerwise False</returns>
+		bool Exists(string key);
 
         /// <summary>
         /// Verify that the specified cache key exists
@@ -296,40 +307,5 @@ namespace Raven.CacheClient
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
         Task<IEnumerable<string>> SearchKeysAsync(string pattern);
-
-        /// <summary>
-        /// Flushes the database.
-        /// </summary>
-        void FlushDb();
-
-        /// <summary>
-        /// Flushes the database asynchronous.
-        /// </summary>
-        /// <returns></returns>
-        Task FlushDbAsync();
-
-     //   /// <summary>
-     //   /// Save the DB in background.
-     //   /// </summary>
-	    //void Save(SaveType saveType);
-
-     //   /// <summary>
-     //   /// Save the DB in background asynchronous.
-     //   /// </summary>
-     //   void SaveAsync(SaveType saveType);
-
-        ///// <summary>
-        ///// Gets the information about redis.
-        ///// More info <see cref="http://redis.io/commands/INFO"/>
-        ///// </summary>
-        //Dictionary<string, string> GetInfo();
-
-        ///// <summary>
-        ///// Gets the information about redis.
-        ///// More info <see cref="http://redis.io/commands/INFO"/>
-        ///// </summary>
-        //Task<Dictionary<string, string>> GetInfoAsync();
-
-        
     }
 }
