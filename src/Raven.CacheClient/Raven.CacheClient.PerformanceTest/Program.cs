@@ -1,16 +1,18 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Raven.CacheClient.Test
+namespace Raven.CacheClient.PerformanceTest
 {
-    [TestClass]
-    public class UnitTest1
+    class Program
     {
-        [TestMethod]
-        public void TestMethod1()
+        static void Main(string[] args)
         {
+
             MallCard mall = new MallCard()
             {
                 ID = Guid.NewGuid().ToString("N"),
@@ -19,30 +21,39 @@ namespace Raven.CacheClient.Test
             };
 
 
-            int speed = 10000;
+            int speed = 300000;
             Stopwatch sw = new Stopwatch();
-            
+
             var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
             using (RedisCacheClient client = new RedisCacheClient(new Raven.Serializer.WithMsgPack.MsgPackSerializer(), "127.0.0.1", 3))
             {
-                sw.Reset();
+                Task[] taskList = new Task[speed];
+                sw.Restart();
+
                 for (var i = 0; i < speed; i++)
                 {
                     RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
                     //RedisValue val = serializer.Serialize(mall);
                     //client.Database.StringSet(key, val);
 
-                    RedisValue val2 = client.Database.StringGet(key);
-                    var mall2 = serializer.Deserialize<MallCard2>(val2);
+                    var task = client.Database.StringGetAsync(key).ContinueWith(x =>
+                    {
+                        var mall2 = serializer.Deserialize<MallCard2>(x.Result);
+                        ;
+                    });
+                    taskList[i] = task;
                 }
 
+                Task.WhenAll(taskList);
+                sw.Stop();
                 Console.WriteLine(sw.ElapsedMilliseconds);
+                Console.ReadLine();
                 //Assert.AreEqual(mall.MallID, mall2.MallID);
             }
+
         }
     }
 
-    
     public class MallCard
     {
         /// <summary>
