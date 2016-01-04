@@ -8,8 +8,10 @@ namespace Raven.CacheClient.Test
     [TestClass]
     public class UnitTest1
     {
+        private static string host = "127.0.0.1";
+
         [TestMethod]
-        public void TestMethod1()
+        public void StringSet_StringGet()
         {
             MallCard mall = new MallCard()
             {
@@ -17,32 +19,43 @@ namespace Raven.CacheClient.Test
                 MallID = new Random().Next(1, 100),
                 UID = new Random().Next(1, 1000)
             };
-
-
-            int speed = 10000;
-            Stopwatch sw = new Stopwatch();
             
             var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
-            using (RedisCacheClient client = new RedisCacheClient(new Raven.Serializer.WithMsgPack.MsgPackSerializer(), "127.0.0.1", 3))
+            using (RedisCacheClient client = new RedisCacheClient( "127.0.0.1", 3, serializer))
             {
-                sw.Reset();
-                for (var i = 0; i < speed; i++)
-                {
-                    RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
-                    //RedisValue val = serializer.Serialize(mall);
-                    //client.Database.StringSet(key, val);
+                RedisKey key = mall.GetKey();
+                RedisValue val = serializer.Serialize(mall);
+                client.Database.StringSet(key, val);
 
-                    RedisValue val2 = client.Database.StringGet(key);
-                    var mall2 = serializer.Deserialize<MallCard2>(val2);
-                }
+                RedisValue val2 = client.Database.StringGet(key);
+                var mall2 = serializer.Deserialize<MallCard2>(val2);
 
-                Console.WriteLine(sw.ElapsedMilliseconds);
-                //Assert.AreEqual(mall.MallID, mall2.MallID);
+                Assert.AreEqual(mall.MallID, mall2.MallID);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void HashSet_HashGet()
+        {
+            //var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
+            //using (RedisCacheClient client = new RedisCacheClient(new Raven.Serializer.WithMsgPack.MsgPackSerializer(), "127.0.0.1", 3))
+            //{
+            //    RedisKey key = mall.GetKey();
+            //    RedisValue val = serializer.Serialize(mall);
+            //    client.Database.HashSet(key, val);
+
+            //    RedisValue val2 = client.Database.HashGetAll(key);
+            //    var mall2 = serializer.Deserialize<MallCard2>(val2);
+
+            //    Assert.AreEqual(mall.MallID, mall2.MallID);
+            //}
         }
     }
 
-    
+
     public class MallCard
     {
         /// <summary>

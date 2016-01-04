@@ -54,11 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\RedisCachingSectionHandler.cs" />
-    <Compile Include="Configuration\RedisHost.cs" />
-    <Compile Include="Configuration\RedisHostCollection.cs" />
+    <Compile Include="CacheClientSettings.cs" />
     <Compile Include="ICacheClient.cs" />
-    <Compile Include="Configuration\IRedisCachingConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedisCacheClient.cs" />
   </ItemGroup>

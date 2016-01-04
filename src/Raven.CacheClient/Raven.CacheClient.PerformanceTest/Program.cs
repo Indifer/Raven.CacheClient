@@ -21,32 +21,35 @@ namespace Raven.CacheClient.PerformanceTest
             };
 
 
-            int speed = 300000;
+            int speed = 10000;
             Stopwatch sw = new Stopwatch();
-
-            var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
-            using (RedisCacheClient client = new RedisCacheClient(new Raven.Serializer.WithMsgPack.MsgPackSerializer(), "127.0.0.1", 3))
+            
+            using (RedisCacheClient client = new RedisCacheClient("127.0.0.1"))
             {
                 Task[] taskList = new Task[speed];
                 sw.Restart();
 
                 for (var i = 0; i < speed; i++)
                 {
-                    RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
-                    //RedisValue val = serializer.Serialize(mall);
-                    //client.Database.StringSet(key, val);
+                    //RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
+                    ////RedisValue val = serializer.Serialize(mall);
+                    ////client.Database.StringSet(key, val);
 
-                    var task = client.Database.StringGetAsync(key).ContinueWith(x =>
-                    {
-                        var mall2 = serializer.Deserialize<MallCard2>(x.Result);
-                        ;
-                    });
-                    taskList[i] = task;
+                    //var task = client.Database.StringGetAsync(key).ContinueWith(x =>
+                    //{
+                    //    var mall2 = serializer.Deserialize<MallCard2>(x.Result);
+                    //    ;
+                    //});
+                    //taskList[i] = task;
+
+                    string key = "123ABC";
+                    taskList[i] = client.GetAsync<MallCard2>(key);
                 }
 
                 Task.WhenAll(taskList);
                 sw.Stop();
                 Console.WriteLine(sw.ElapsedMilliseconds);
+                Console.WriteLine(speed / sw.Elapsed.TotalSeconds);
                 Console.ReadLine();
                 //Assert.AreEqual(mall.MallID, mall2.MallID);
             }

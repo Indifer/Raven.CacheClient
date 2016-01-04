@@ -14,10 +14,10 @@ namespace Raven.CacheClient
     /// </summary>
     public interface ICacheClient : IDisposable
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        IDatabase Database { get; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //IDatabase Database { get; }
 
         /// <summary>
         /// 
@@ -291,7 +291,7 @@ namespace Raven.CacheClient
         ///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
-        IEnumerable<string> SearchKeys(string pattern);
+        //IEnumerable<string> SearchKeys(string pattern);
 
         /// <summary>
         /// Searches the keys from Redis database
@@ -306,6 +306,6 @@ namespace Raven.CacheClient
         ///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
-        Task<IEnumerable<string>> SearchKeysAsync(string pattern);
+        //Task<IEnumerable<string>> SearchKeysAsync(string pattern);
     }
 }
