@@ -24,33 +24,52 @@ namespace Raven.CacheClient
         /// </summary>
         IDataSerializer Serializer { get; }
 
-        /// <summary>
-		/// Verify that the specified cache key exists
-		/// </summary>
-		/// <param name="key">The cache key.</param>
-		/// <returns>True if the key is present into Redis. Othwerwise False</returns>
-		bool Exists(string key);
 
         /// <summary>
-        /// Verify that the specified cache key exists
+        /// 
         /// </summary>
-        /// <param name="key">The cache key.</param>
-        /// <returns>True if the key is present into Redis. Othwerwise False</returns>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        bool Exists(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         Task<bool> ExistsAsync(string key);
 
         /// <summary>
-        /// Removes the specified key from Redis Database
+        /// 
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>True if the key has removed. Othwerwise False</returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        T Get<T>(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<T> GetAsync<T>(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         bool Remove(string key);
 
         /// <summary>
-        /// Removes the specified key from Redis Database
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>True if the key has removed. Othwerwise False</returns>
-        Task<bool> RemoveAsync(string key);
+		/// Removes the specified key from Redis Database
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <returns>
+		/// True if the key has removed. Othwerwise False
+		/// </returns>
+		Task<bool> RemoveAsync(string key);
 
         /// <summary>
         /// Removes all specified keys from Redis Database
@@ -62,250 +81,155 @@ namespace Raven.CacheClient
         /// Removes all specified keys from Redis Database
         /// </summary>
         /// <param name="keys">The key.</param>
+        /// <returns></returns>
         Task RemoveAllAsync(IEnumerable<string> keys);
 
         /// <summary>
-        /// Get the object with the specified key from Redis database
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <returns>Null if not present, otherwise the instance of T.</returns>
-        T Get<T>(string key);
-
-        /// <summary>
-        /// Get the object with the specified key from Redis database
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <returns>Null if not present, otherwise the instance of T.</returns>
-        Task<T> GetAsync<T>(string key);
-
-        /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <returns>True if the object has been added. Otherwise false</returns>
-        bool Add<T>(string key, T value);
-
-        /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <returns>True if the object has been added. Otherwise false</returns>
-        Task<bool> AddAsync<T>(string key, T value);
-
-        /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        bool Set<T>(string key, T value);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<bool> SetAsync<T>(string key, T value);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         bool Replace<T>(string key, T value);
 
         /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         Task<bool> ReplaceAsync<T>(string key, T value);
 
         /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
-        bool Add<T>(string key, T value, DateTimeOffset expiresAt);
-
-        /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
-        Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt);
-
-        /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
+        bool Set<T>(string key, T value, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
+        Task<bool> SetAsync<T>(string key, T value, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         bool Replace<T>(string key, T value, DateTimeOffset expiresAt);
 
         /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt);
 
         /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="expiresIn">The duration of the cache using Timespan.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
-        bool Add<T>(string key, T value, TimeSpan expiresIn);
-
-        /// <summary>
-        /// Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="expiresIn">The duration of the cache using Timespan.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
-        Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn);
-
-        /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <param name="expiresIn">The duration of the cache using Timespan.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
+        bool Set<T>(string key, T value, TimeSpan expiresIn);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
+        Task<bool> SetAsync<T>(string key, T value, TimeSpan expiresIn);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
         bool Replace<T>(string key, T value, TimeSpan expiresIn);
 
         /// <summary>
-        /// Replaces the object with specified key into Redis database.
+        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The instance of T</param>
-        /// <param name="expiresIn">The duration of the cache using Timespan.</param>
-        /// <returns>
-        /// True if the object has been added. Otherwise false
-        /// </returns>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresIn"></param>
+        /// <returns></returns>
         Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn);
 
         /// <summary>
-        /// Get the objects with the specified keys from Redis database with one roundtrip
+        /// 
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <returns>
-        /// Empty list if there are no results, otherwise the instance of T.
-        /// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keys"></param>
+        /// <returns></returns>
         IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
 
         /// <summary>
-        /// Get the objects with the specified keys from Redis database with a single roundtrip
+        /// 
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <returns>
-        /// Empty list if there are no results, otherwise the instance of T.
-        /// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keys"></param>
+        /// <returns></returns>
         Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys);
 
         /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
+        /// 
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        bool AddAll<T>(IList<Tuple<string, T>> items);
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        bool SetAll<T>(IList<Tuple<string, T>> items);
 
         /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
+        /// 
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items);
-
-        /// <summary>
-        /// Run SADD command <see cref="http://redis.io/commands/sadd"/>
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        /// <param name="key">The key.</param>
-        bool SetAdd(string memberName, string key);
-
-        /// <summary>
-        /// Run SADD command <see cref="http://redis.io/commands/sadd"/>
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        /// <param name="key">The key.</param>
-        Task<bool> SetAddAsync(string memberName, string key);
-
-        /// <summary>
-        /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        string[] SetMember(string memberName);
-
-        /// <summary>
-        /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        Task<string[]> SetMemberAsync(string memberName);
-
-        /// <summary>
-        /// Searches the keys from Redis database
-        /// </summary>
-        /// <remarks>
-        /// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
-        /// </remarks>
-        /// <param name="pattern">The pattern.</param>
-        /// <example>
-        ///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-        ///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-        ///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
-        /// </example>
-        /// <returns>A list of cache keys retrieved from Redis database</returns>
-        //IEnumerable<string> SearchKeys(string pattern);
-
-        /// <summary>
-        /// Searches the keys from Redis database
-        /// </summary>
-        /// <remarks>
-        /// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
-        /// </remarks>
-        /// <param name="pattern">The pattern.</param>
-        /// <example>
-        ///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-        ///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-        ///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
-        /// </example>
-        /// <returns>A list of cache keys retrieved from Redis database</returns>
-        //Task<IEnumerable<string>> SearchKeysAsync(string pattern);
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        Task<bool> SetAllAsync<T>(IList<Tuple<string, T>> items);
     }
 }

@@ -60,6 +60,7 @@
     <Compile Include="ICacheClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedisCacheClient.cs" />
+    <Compile Include="SetType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

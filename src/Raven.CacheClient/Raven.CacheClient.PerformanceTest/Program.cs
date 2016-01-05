@@ -42,6 +42,8 @@ namespace Raven.CacheClient.PerformanceTest
                     //});
                     //taskList[i] = task;
 
+                    //client.s
+
                     string key = "123ABC";
                     taskList[i] = client.GetAsync<MallCard2>(key);
                 }

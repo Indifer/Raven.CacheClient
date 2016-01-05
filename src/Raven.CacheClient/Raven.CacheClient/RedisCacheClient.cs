@@ -12,7 +12,7 @@ namespace Raven.CacheClient
     /// <summary>
     /// redis缓存客户端
     /// </summary>
-    public class RedisCacheClient : ICacheClient
+    public class RedisCacheClient : IDisposable
     {
         private ConnectionMultiplexer connectionMultiplexer;
         private readonly IDatabase db;
@@ -118,6 +118,42 @@ namespace Raven.CacheClient
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T Get<T>(string key)
+        {
+            var valueBytes = db.StringGet(key);
+
+            if (!valueBytes.HasValue)
+            {
+                return default(T);
+            }
+
+            return serializer.Deserialize<T>(valueBytes);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<T> GetAsync<T>(string key)
+        {
+            var valueBytes = await db.StringGetAsync(key).ConfigureAwait(false);
+
+            if (!valueBytes.HasValue)
+            {
+                return default(T);
+            }
+
+            return serializer.Deserialize<T>(valueBytes);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public bool Remove(string key)
@@ -170,45 +206,9 @@ namespace Raven.CacheClient
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
-        /// <returns></returns>
-        public T Get<T>(string key)
-        {
-            var valueBytes = db.StringGet(key);
-
-            if (!valueBytes.HasValue)
-            {
-                return default(T);
-            }
-
-            return serializer.Deserialize<T>(valueBytes);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public async Task<T> GetAsync<T>(string key)
-        {
-            var valueBytes = await db.StringGetAsync(key);
-
-            if (!valueBytes.HasValue)
-            {
-                return default(T);
-            }
-
-            return serializer.Deserialize<T>(valueBytes);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool Add<T>(string key, T value)
+        public bool Set<T>(string key, T value)
         {
             var entryBytes = serializer.Serialize(value);
 
@@ -222,7 +222,7 @@ namespace Raven.CacheClient
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Task<bool> AddAsync<T>(string key, T value)
+        public Task<bool> SetAsync<T>(string key, T value)
         {
             var entryBytes = serializer.Serialize(value);
 
@@ -238,7 +238,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Replace<T>(string key, T value)
         {
-            return Add(key, value);
+            return Set(key, value);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> ReplaceAsync<T>(string key, T value)
         {
-            return AddAsync(key, value);
+            return SetAsync(key, value);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Raven.CacheClient
         /// <param name="value"></param>
         /// <param name="expiresAt"></param>
         /// <returns></returns>
-        public bool Add<T>(string key, T value, DateTimeOffset expiresAt)
+        public bool Set<T>(string key, T value, DateTimeOffset expiresAt)
         {
             var entryBytes = serializer.Serialize(value);
             var expiration = expiresAt.Subtract(DateTimeOffset.Now);
@@ -277,13 +277,13 @@ namespace Raven.CacheClient
         /// <param name="value"></param>
         /// <param name="expiresAt"></param>
         /// <returns></returns>
-        public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt)
+        public Task<bool> SetAsync<T>(string key, T value, DateTimeOffset expiresAt)
         {
             var entryBytes = serializer.Serialize(value);
             var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
             return db.StringSetAsync(key, entryBytes, expiration);
-        }
+        }        
 
         /// <summary>
         /// 
@@ -295,7 +295,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Replace<T>(string key, T value, DateTimeOffset expiresAt)
         {
-            return Add(key, value, expiresAt);
+            return Set(key, value, expiresAt);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt)
         {
-            return AddAsync(key, value, expiresAt);
+            return SetAsync(key, value, expiresAt);
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace Raven.CacheClient
         /// <param name="value"></param>
         /// <param name="expiresIn"></param>
         /// <returns></returns>
-        public bool Add<T>(string key, T value, TimeSpan expiresIn)
+        public bool Set<T>(string key, T value, TimeSpan expiresIn)
         {
             var entryBytes = serializer.Serialize(value);
 
@@ -334,7 +334,7 @@ namespace Raven.CacheClient
         /// <param name="value"></param>
         /// <param name="expiresIn"></param>
         /// <returns></returns>
-        public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn)
+        public Task<bool> SetAsync<T>(string key, T value, TimeSpan expiresIn)
         {
             var entryBytes = serializer.Serialize(value);
 
@@ -351,7 +351,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Replace<T>(string key, T value, TimeSpan expiresIn)
         {
-            return Add(key, value, expiresIn);
+            return Set(key, value, expiresIn);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn)
         {
-            return AddAsync(key, value, expiresIn);
+            return SetAsync(key, value, expiresIn);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Raven.CacheClient
         public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
         {
             var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
-            var result = await db.StringGetAsync(redisKeys);
+            var result = await db.StringGetAsync(redisKeys).ConfigureAwait(false);
             return redisKeys.ToDictionary(key => (string)key, key =>
             {
                 {
@@ -413,7 +413,7 @@ namespace Raven.CacheClient
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
         /// <returns></returns>
-        public bool AddAll<T>(IList<Tuple<string, T>> items)
+        public bool SetAll<T>(IList<Tuple<string, T>> items)
         {
             Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
@@ -426,54 +426,54 @@ namespace Raven.CacheClient
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
         /// <returns></returns>
-        public Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
+        public Task<bool> SetAllAsync<T>(IList<Tuple<string, T>> items)
         {
             Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
             return db.StringSetAsync(values.ToArray());
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="memberName"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public bool SetAdd(string memberName, string key)
-        {
-            return db.SetAdd(memberName, key);
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="memberName"></param>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public bool SetAdd(string memberName, string key)
+        //{
+        //    return db.SetAdd(memberName, key);
+        //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="memberName"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public Task<bool> SetAddAsync(string memberName, string key)
-        {
-            return db.SetAddAsync(memberName, key);
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="memberName"></param>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public Task<bool> SetAddAsync(string memberName, string key)
+        //{
+        //    return db.SetAddAsync(memberName, key);
+        //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="memberName"></param>
-        /// <returns></returns>
-        public string[] SetMember(string memberName)
-        {
-            return db.SetMembers(memberName).Select(x => x.ToString()).ToArray();
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="memberName"></param>
+        ///// <returns></returns>
+        //public string[] SetMember(string memberName)
+        //{
+        //    return db.SetMembers(memberName).Select(x => x.ToString()).ToArray();
+        //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="memberName"></param>
-        /// <returns></returns>
-        public async Task<string[]> SetMemberAsync(string memberName)
-        {
-            return (await db.SetMembersAsync(memberName)).Select(x => x.ToString()).ToArray();
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="memberName"></param>
+        ///// <returns></returns>
+        //public async Task<string[]> SetMemberAsync(string memberName)
+        //{
+        //    return (await db.SetMembersAsync(memberName)).Select(x => x.ToString()).ToArray();
+        //}
 
         //public IEnumerable<string> SearchKeys(string pattern)
         //{
