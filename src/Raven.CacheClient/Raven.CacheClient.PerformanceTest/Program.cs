@@ -21,15 +21,15 @@ namespace Raven.CacheClient.PerformanceTest
             };
 
 
-            int speed = 10000;
+            int seed = 20000;
             Stopwatch sw = new Stopwatch();
-            
+            Task[] taskList = new Task[seed];
+
             using (RedisCacheClient client = new RedisCacheClient("127.0.0.1"))
             {
-                Task[] taskList = new Task[speed];
                 sw.Restart();
 
-                for (var i = 0; i < speed; i++)
+                for (var i = 0; i < seed; i++)
                 {
                     //RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
                     ////RedisValue val = serializer.Serialize(mall);
@@ -51,7 +51,7 @@ namespace Raven.CacheClient.PerformanceTest
                 Task.WhenAll(taskList);
                 sw.Stop();
                 Console.WriteLine(sw.ElapsedMilliseconds);
-                Console.WriteLine(speed / sw.Elapsed.TotalSeconds);
+                Console.WriteLine(seed / sw.Elapsed.TotalSeconds);
                 Console.ReadLine();
                 //Assert.AreEqual(mall.MallID, mall2.MallID);
             }
@@ -94,17 +94,17 @@ namespace Raven.CacheClient.PerformanceTest
         /// <summary>
         ///// 商场id
         ///// </summary>
-        public long MallID { get; set; }
+        public long MallID;
 
         /// <summary>
         ///自增主键
         /// </summary>
-        public string ID { get; set; }
+        public string ID;
 
         ///// <summary>
         ///// 会员卡类型ID
         ///// </summary>
-        public long? CardTypeID { get; set; }
+        public long? CardTypeID;
 
         public string GetKey()
         {

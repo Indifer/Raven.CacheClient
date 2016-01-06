@@ -23,7 +23,7 @@ namespace Raven.CacheClient.Test
             };
 
             var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
-            using (RedisCacheClient client = new RedisCacheClient("127.0.0.1", 3, serializer))
+            using (RedisCacheClient client = new RedisCacheClient(host, 3, serializer))
             {
                 var key = mall.GetKey();
                 //RedisValue val = serializer.Serialize(mall);
