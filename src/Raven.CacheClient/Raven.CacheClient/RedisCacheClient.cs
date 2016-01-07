@@ -17,8 +17,7 @@ namespace Raven.CacheClient
         private ConnectionMultiplexer connectionMultiplexer;
         private readonly IDatabase db;
         private readonly IDataSerializer serializer;
-
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -96,6 +95,36 @@ namespace Raven.CacheClient
         }
 
         /// <summary>
+        /// 反序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private T Deserialize<T>(byte[] bytes)
+        {
+            try
+            {
+                T val = serializer.Deserialize<T>(bytes);
+                return val;
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private byte[] Serialize(object obj)
+        {
+            var bytes = serializer.Serialize(obj);
+            return bytes;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
@@ -130,7 +159,7 @@ namespace Raven.CacheClient
                 return default(T);
             }
 
-            return serializer.Deserialize<T>(valueBytes);
+            return Deserialize<T>(valueBytes);
         }
 
         /// <summary>
@@ -148,7 +177,8 @@ namespace Raven.CacheClient
                 return default(T);
             }
 
-            return serializer.Deserialize<T>(valueBytes);
+            return Deserialize<T>(valueBytes);
+
         }
         
         /// <summary>
@@ -210,7 +240,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Set<T>(string key, T value)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
 
             return db.StringSet(key, entryBytes);
         }
@@ -224,7 +254,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> SetAsync<T>(string key, T value)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
 
             return db.StringSetAsync(key, entryBytes);
         }
@@ -263,7 +293,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Set<T>(string key, T value, DateTimeOffset expiresAt)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
             var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
             return db.StringSet(key, entryBytes, expiration);
@@ -279,7 +309,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> SetAsync<T>(string key, T value, DateTimeOffset expiresAt)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
             var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
             return db.StringSetAsync(key, entryBytes, expiration);
@@ -321,7 +351,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool Set<T>(string key, T value, TimeSpan expiresIn)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
 
             return db.StringSet(key, entryBytes, expiresIn);
         }
@@ -336,7 +366,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> SetAsync<T>(string key, T value, TimeSpan expiresIn)
         {
-            var entryBytes = serializer.Serialize(value);
+            var entryBytes = Serialize(value);
 
             return db.StringSetAsync(key, entryBytes, expiresIn);
         }
@@ -382,7 +412,7 @@ namespace Raven.CacheClient
                 {
                     var index = Array.IndexOf(redisKeys, key);
                     var value = result[index];
-                    return value == RedisValue.Null ? default(T) : serializer.Deserialize<T>(result[index]);
+                    return value == RedisValue.Null ? default(T) : Deserialize<T>(result[index]);
                 }
             });
         }
@@ -402,7 +432,7 @@ namespace Raven.CacheClient
                 {
                     var index = Array.IndexOf(redisKeys, key);
                     var value = result[index];
-                    return value == RedisValue.Null ? default(T) : serializer.Deserialize<T>(result[index]);
+                    return value == RedisValue.Null ? default(T) : Deserialize<T>(result[index]);
                 }
             });
         }
@@ -415,7 +445,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public bool SetAll<T>(IList<Tuple<string, T>> items)
         {
-            Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
+            Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => Serialize(item.Item2));
 
             return db.StringSet(values.ToArray());
         }
@@ -428,7 +458,7 @@ namespace Raven.CacheClient
         /// <returns></returns>
         public Task<bool> SetAllAsync<T>(IList<Tuple<string, T>> items)
         {
-            Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
+            Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => Serialize(item.Item2));
 
             return db.StringSetAsync(values.ToArray());
         }
