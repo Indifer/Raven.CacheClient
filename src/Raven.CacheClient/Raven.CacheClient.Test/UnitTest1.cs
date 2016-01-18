@@ -3,31 +3,32 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StackExchange.Redis;
 using System.Diagnostics;
 using MsgPack.Serialization;
+using Raven.Serializer;
 
 namespace Raven.CacheClient.Test
 {
     [TestClass]
     public class UnitTest1
     {
-        private static string host = "127.0.0.1";
+        //private static string host = "120.26.127.20,120.26.127.204";
+
+        static IDataSerializer serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
 
         [TestMethod]
         public void StringSet_StringGet()
         {
             MallCard mall = new MallCard()
             {
-                ID = "123abc",//Guid.NewGuid().ToString("N"),
+                ID = Guid.NewGuid().ToString("N").Substring(0, 5),
                 Name = Guid.NewGuid().ToString("N"),
                 MallID = new Random().Next(1, 100),
                 UID = new Random().Next(1, 1000)
             };
-
-            var serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
-            using (RedisCacheClient client = new RedisCacheClient(host, 3, serializer))
+            using (RedisCacheClient client = new RedisCacheClient(serializer))
             {
                 var key = mall.GetKey();
-                //RedisValue val = serializer.Serialize(mall);
-                //client.Database.StringSet(key, val);
+                RedisValue val = serializer.Serialize(mall);
+                client.Database.StringSet(key, val);
                 client.Set(key, mall);
 
                 //byte[] val2 = client.Database.StringGet(key);

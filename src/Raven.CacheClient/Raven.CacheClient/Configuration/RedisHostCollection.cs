@@ -33,7 +33,8 @@ namespace Raven.CacheClient.Configuration
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((RedisHost)element).Host;
+            RedisHost ele = element as RedisHost;
+            return ele.Host + ":" + ele.Port;
         }
     }
 }

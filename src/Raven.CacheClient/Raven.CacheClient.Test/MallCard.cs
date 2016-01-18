@@ -37,7 +37,7 @@ namespace Raven.CacheClient.Test
 
         public string GetKey()
         {
-            return string.Concat("MallCard", ID);
+            return string.Concat("MallCard:", ID);
         }
     }
 

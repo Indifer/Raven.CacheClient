@@ -18,12 +18,12 @@ namespace Raven.CacheClient.Configuration
             }
         }
 
-        [ConfigurationProperty("cachePort", IsRequired = true)]
-        public int CachePort
+        [ConfigurationProperty("port", IsRequired = true)]
+        public int Port
         {
             get
             {
-                var config = this["cachePort"];
+                var config = this["port"];
                 if (config != null)
                 {
                     var value = config.ToString();

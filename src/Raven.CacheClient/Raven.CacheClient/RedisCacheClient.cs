@@ -1,4 +1,5 @@
-﻿using Raven.Serializer;
+﻿using Raven.CacheClient.Configuration;
+using Raven.Serializer;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -42,39 +43,40 @@ namespace Raven.CacheClient
             get { return this.serializer; }
         }
 
-        //public RedisCacheClient(IDataSerializer serializer, IRedisCachingConfiguration configuration = null)
-        //{
-        //    if (serializer == null)
-        //    {
-        //        throw new ArgumentNullException("serializer");
-        //    }
+        public RedisCacheClient(IDataSerializer serializer, IRedisCachingConfiguration configuration = null)
+        {
+            if (serializer == null)
+            {
+                throw new ArgumentNullException("serializer");
+            }
 
-        //    if (configuration == null)
-        //    {
-        //        configuration = RedisCachingSectionHandler.GetConfig();
-        //    }
+            if (configuration == null)
+            {
+                configuration = RedisCachingSectionHandler.GetConfig();
+            }
 
-        //    if (configuration == null)
-        //    {
-        //        throw new ConfigurationErrorsException("Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions");
-        //    }
+            if (configuration == null)
+            {
+                throw new ConfigurationErrorsException("Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions");
+            }
 
-        //    var options = new ConfigurationOptions
-        //    {
-        //        Ssl = configuration.Ssl,
-        //        AllowAdmin = configuration.AllowAdmin,
-        //        Password = configuration.Password
-        //    };
+            var options = new ConfigurationOptions
+            {
+                Ssl = configuration.Ssl,
+                AllowAdmin = configuration.AllowAdmin,
+                Password = configuration.Password
+            };
 
-        //    foreach (RedisHost redisHost in configuration.RedisHosts)
-        //    {
-        //        options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
-        //    }
+            foreach (RedisHost redisHost in configuration.RedisHosts)
+            {
+                options.EndPoints.Add(redisHost.Host, redisHost.Port);
+            }
 
-        //    this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
-        //    db = connectionMultiplexer.GetDatabase(configuration.Database);
-        //    this.serializer = serializer;
-        //}
+            this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+            db = connectionMultiplexer.GetDatabase(configuration.Database);
+            this.serializer = serializer;
+
+        }
 
         /// <summary>
         /// 

@@ -36,13 +36,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MsgPack">
-      <HintPath>..\..\..\..\Raven.Serializer\output\net45\Raven.Serializer.WithMsgPack\MsgPack.dll</HintPath>
+      <HintPath>..\..\..\modules\Raven.Serializer\output\net45\Raven.Serializer.WithMsgPack\MsgPack.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Serializer">
-      <HintPath>..\..\..\..\Raven.Serializer\output\net45\Raven.Serializer\Raven.Serializer.dll</HintPath>
+      <HintPath>..\..\..\modules\Raven.Serializer\output\net45\Raven.Serializer\Raven.Serializer.dll</HintPath>
     </Reference>
     <Reference Include="Raven.Serializer.WithMsgPack">
-      <HintPath>..\..\..\..\Raven.Serializer\output\net45\Raven.Serializer.WithMsgPack\Raven.Serializer.WithMsgPack.dll</HintPath>
+      <HintPath>..\..\..\modules\Raven.Serializer\output\net45\Raven.Serializer.WithMsgPack\Raven.Serializer.WithMsgPack.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis">
       <HintPath>..\packages\StackExchange.Redis.1.0.488\lib\net45\StackExchange.Redis.dll</HintPath>
@@ -71,6 +71,9 @@
       <Project>{d4daf9b2-9cf6-4de4-8858-0e9d303d3d0d}</Project>
       <Name>Raven.CacheClient</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
