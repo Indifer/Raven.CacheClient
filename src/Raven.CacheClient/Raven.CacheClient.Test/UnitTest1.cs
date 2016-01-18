@@ -39,6 +39,8 @@ namespace Raven.CacheClient.Test
             }
         }
 
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,6 +61,24 @@ namespace Raven.CacheClient.Test
             //}
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void Publish()
+        {
+            MallCard mall = new MallCard()
+            {
+                ID = Guid.NewGuid().ToString("N").Substring(0, 5),
+                Name = Guid.NewGuid().ToString("N"),
+                MallID = new Random().Next(1, 100),
+                UID = new Random().Next(1, 1000)
+            };
+            using (RedisCacheClient client = new RedisCacheClient(serializer))
+            {
+                client.Publish("var", mall);
+            }
+        }
 
     }
 

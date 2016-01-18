@@ -18,7 +18,7 @@ namespace Raven.CacheClient
         private ConnectionMultiplexer connectionMultiplexer;
         private readonly IDatabase db;
         private readonly IDataSerializer serializer;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -43,11 +43,16 @@ namespace Raven.CacheClient
             get { return this.serializer; }
         }
 
-        public RedisCacheClient(IDataSerializer serializer, IRedisCachingConfiguration configuration = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serializer"></param>
+        /// <param name="configuration"></param>
+        public RedisCacheClient(IDataSerializer serializer = null, IRedisCachingConfiguration configuration = null)
         {
             if (serializer == null)
             {
-                throw new ArgumentNullException("serializer");
+                serializer = SerializerFactory.Create(SerializerType.MsgPack);
             }
 
             if (configuration == null)
@@ -182,7 +187,7 @@ namespace Raven.CacheClient
             return Deserialize<T>(valueBytes);
 
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -315,7 +320,7 @@ namespace Raven.CacheClient
             var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
             return db.StringSetAsync(key, entryBytes, expiration);
-        }        
+        }
 
         /// <summary>
         /// 
@@ -534,6 +539,121 @@ namespace Raven.CacheClient
         //    return Task.Factory.StartNew(() => SearchKeys(pattern));
         //}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public long Publish<T>(string channel, T message, CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            return sub.Publish(channel, serializer.Serialize(message), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public async Task<long> PublishAsync<T>(string channel, T message, CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            return await sub.PublishAsync(channel, serializer.Serialize(message), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="handler"></param>
+        /// <param name="flags"></param>
+        public void Subscribe<T>(string channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="handler"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public async Task SubscribeAsync<T>(string channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="handler"></param>
+        /// <param name="flags"></param>
+        public void Unsubscribe<T>(string channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.Unsubscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="handler"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public async Task UnsubscribeAsync<T>(string channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flags"></param>
+        public void UnsubscribeAll(CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.UnsubscribeAll(flags);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public async Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.UnsubscribeAllAsync(flags);
+        }
+
         #region IDispose
 
         private bool isDisposed = false;
@@ -562,7 +682,7 @@ namespace Raven.CacheClient
                         connectionMultiplexer.Dispose();
                     }
                     connectionMultiplexer = null;
-                }                
+                }
             }
             isDisposed = true;
         }
