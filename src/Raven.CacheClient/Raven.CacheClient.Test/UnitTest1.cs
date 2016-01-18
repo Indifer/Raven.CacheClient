@@ -10,8 +10,6 @@ namespace Raven.CacheClient.Test
     [TestClass]
     public class UnitTest1
     {
-        //private static string host = "120.26.127.20,120.26.127.204";
-
         static IDataSerializer serializer = Raven.Serializer.SerializerFactory.Create(Serializer.SerializerType.MsgPack);
 
         [TestMethod]
