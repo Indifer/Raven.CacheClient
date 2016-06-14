@@ -21,32 +21,36 @@ namespace Raven.CacheClient.PerformanceTest
             };
 
 
-            int seed = 20000;
+            int seed = 1;
             Stopwatch sw = new Stopwatch();
             Task[] taskList = new Task[seed];
+            string conStr = System.Configuration.ConfigurationManager.AppSettings["conStr"];
 
-            using (RedisCacheClient client = new RedisCacheClient("127.0.0.1"))
+            using (RedisCacheClient client = new RedisCacheClient(conStr, 2))
             {
                 sw.Restart();
 
-                for (var i = 0; i < seed; i++)
-                {
-                    //RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
-                    ////RedisValue val = serializer.Serialize(mall);
-                    ////client.Database.StringSet(key, val);
+                string key = "123ABC";
+                taskList[0] = client.SetAsync<string>(key, "33333");
 
-                    //var task = client.Database.StringGetAsync(key).ContinueWith(x =>
-                    //{
-                    //    var mall2 = serializer.Deserialize<MallCard2>(x.Result);
-                    //    ;
-                    //});
-                    //taskList[i] = task;
+                //for (var i = 0; i < seed; i++)
+                //{
+                //    //RedisKey key = "MallCardbcb0878b8e814b8fa7540862729044c9"; //mall.GetKey();
+                //    ////RedisValue val = serializer.Serialize(mall);
+                //    client.Database.StringSet(key, val);
 
-                    //client.s
+                //    //var task = client.Database.StringGetAsync(key).ContinueWith(x =>
+                //    //{
+                //    //    var mall2 = serializer.Deserialize<MallCard2>(x.Result);
+                //    //    ;
+                //    //});
+                //    //taskList[i] = task;
 
-                    string key = "123ABC";
-                    taskList[i] = client.GetAsync<MallCard2>(key);
-                }
+                //    //client.s
+
+                //    string key = "123ABC";
+                //    taskList[i] = client.GetAsync<MallCard2>(key);
+                //}
 
                 Task.WhenAll(taskList);
                 sw.Stop();

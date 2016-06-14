@@ -48,7 +48,8 @@ namespace Raven.CacheClient
         /// </summary>
         /// <param name="serializer"></param>
         /// <param name="configuration"></param>
-        public RedisCacheClient(IDataSerializer serializer = null, IRedisCachingConfiguration configuration = null)
+        /// <param name="section"></param>
+        public RedisCacheClient(IDataSerializer serializer = null, IRedisCachingConfiguration configuration = null, string section = RedisCachingSectionHandler.DefaulSection)
         {
             if (serializer == null)
             {
@@ -57,12 +58,12 @@ namespace Raven.CacheClient
 
             if (configuration == null)
             {
-                configuration = RedisCachingSectionHandler.GetConfig();
+                configuration = RedisCachingSectionHandler.GetConfig(section);
             }
 
             if (configuration == null)
             {
-                throw new ConfigurationErrorsException("Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions");
+                throw new ConfigurationErrorsException("Unable to locate <"+ section + "> section into your configuration file.");
             }
 
             var options = new ConfigurationOptions

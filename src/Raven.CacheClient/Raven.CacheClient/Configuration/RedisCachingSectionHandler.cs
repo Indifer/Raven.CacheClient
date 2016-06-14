@@ -9,6 +9,8 @@ namespace Raven.CacheClient.Configuration
 {
     public class RedisCachingSectionHandler : ConfigurationSection, IRedisCachingConfiguration
     {
+        public const string DefaulSection = "redisCacheClient";
+
         /// <summary>
         /// The host of Redis Server
         /// </summary>
@@ -155,9 +157,9 @@ namespace Raven.CacheClient.Configuration
         /// Gets the configuration.
         /// </summary>
         /// <returns></returns>
-        public static RedisCachingSectionHandler GetConfig()
+        public static RedisCachingSectionHandler GetConfig(string section)
         {
-            return ConfigurationManager.GetSection("redisCacheClient") as RedisCachingSectionHandler;
+            return ConfigurationManager.GetSection(section) as RedisCachingSectionHandler;
         }
     }
 }
